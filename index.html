@@ -28,7 +28,7 @@
 
     .header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
     }
 
     .header .emoji {
@@ -46,6 +46,26 @@
       color: #666;
       font-size: 14px;
       margin-top: 4px;
+    }
+
+    .notice-box {
+      background: #f0f4ff;
+      border-left: 4px solid #0f3460;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #333;
+      line-height: 1.7;
+    }
+
+    .notice-box .notice-item {
+      display: flex;
+      gap: 6px;
+    }
+
+    .notice-box .notice-item + .notice-item {
+      margin-top: 6px;
     }
 
     .section-title {
@@ -249,6 +269,11 @@
     <p>請選擇您方便參加的日期（可複選）</p>
   </div>
 
+  <div class="notice-box">
+    <div class="notice-item">📍 <span><strong>地點：</strong>星據點保齡球館（台北旗艦館）<br>台北市延平北路二段83號</span></div>
+    <div class="notice-item">📌 <span>依照最多人的時間去預定位子，看預約結果決定時間</span></div>
+  </div>
+
   <form id="voteForm">
     <div class="form-group">
       <div class="section-title">您的姓名</div>
@@ -283,15 +308,31 @@
           <input type="checkbox" id="d3" name="dates" value="d3">
           <label for="d3">
             <span class="check-mark">✓</span>
-            <span class="date-main">10/25（日）</span>
-            <span class="date-time">下午 3:00–5:00</span>
+            <span class="date-main">10/23（五）</span>
+            <span class="date-time">晚上 7:00–9:00</span>
           </label>
         </div>
         <div class="date-option">
           <input type="checkbox" id="d4" name="dates" value="d4">
           <label for="d4">
             <span class="check-mark">✓</span>
-            <span class="date-main">10/31（日）</span>
+            <span class="date-main">10/25（日）</span>
+            <span class="date-time">下午 3:00–5:00</span>
+          </label>
+        </div>
+        <div class="date-option">
+          <input type="checkbox" id="d5" name="dates" value="d5">
+          <label for="d5">
+            <span class="check-mark">✓</span>
+            <span class="date-main">10/30（五）</span>
+            <span class="date-time">晚上 7:00–9:00</span>
+          </label>
+        </div>
+        <div class="date-option">
+          <input type="checkbox" id="d6" name="dates" value="d6">
+          <label for="d6">
+            <span class="check-mark">✓</span>
+            <span class="date-main">10/31（六）</span>
             <span class="date-time">下午 3:00–5:00</span>
           </label>
         </div>
@@ -319,8 +360,10 @@
   const DATE_LABELS = [
     "10/17（六）3–5pm",
     "10/18（日）3–5pm",
+    "10/23（五）7–9pm",
     "10/25（日）3–5pm",
-    "10/31（日）3–5pm"
+    "10/30（五）7–9pm",
+    "10/31（六）3–5pm"
   ];
 
   function renderResults(counts, total) {
@@ -370,7 +413,9 @@
       d1: document.getElementById('d1').checked,
       d2: document.getElementById('d2').checked,
       d3: document.getElementById('d3').checked,
-      d4: document.getElementById('d4').checked
+      d4: document.getElementById('d4').checked,
+      d5: document.getElementById('d5').checked,
+      d6: document.getElementById('d6').checked
     };
 
     fetch(API_URL, {

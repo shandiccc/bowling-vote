@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>保齡球社團活動投票</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 36px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .header .emoji {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      color: #1a1a2e;
+      font-weight: 700;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"], input[type="email"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    input[type="text"]:focus, input[type="email"]:focus {
+      border-color: #0f3460;
+    }
+
+    .dates-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .date-option {
+      position: relative;
+    }
+
+    .date-option input[type="checkbox"] {
+      display: none;
+    }
+
+    .date-option label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      background: #fafafa;
+    }
+
+    .date-option label:hover {
+      border-color: #0f3460;
+      background: #f0f4ff;
+    }
+
+    .date-option input:checked + label {
+      border-color: #0f3460;
+      background: #0f3460;
+      color: white;
+    }
+
+    .date-option label .date-main {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .date-option label .date-time {
+      font-size: 12px;
+      margin-top: 3px;
+      opacity: 0.75;
+    }
+
+    .date-option input:checked + label .date-time {
+      opacity: 0.9;
+    }
+
+    .check-mark {
+      font-size: 18px;
+      margin-bottom: 4px;
+      display: none;
+    }
+
+    .date-option input:checked + label .check-mark {
+      display: block;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 13px;
+      background: #0f3460;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+
+    .submit-btn:hover { background: #1a4a8a; }
+    .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+    .message {
+      text-align: center;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-top: 14px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .message.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+
+    .message.error {
+      background: #fdecea;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 24px 0;
+    }
+
+    .results-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .result-item {
+      margin-bottom: 12px;
+    }
+
+    .result-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #444;
+      margin-bottom: 5px;
+    }
+
+    .result-label .count {
+      font-weight: 700;
+      color: #0f3460;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: #e8eaf6;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0f3460, #3a7bd5);
+      border-radius: 999px;
+      transition: width 0.6s ease;
+      width: 0%;
+    }
+
+    .total-votes {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      margin-top: 14px;
+    }
+
+    .loading {
+      text-align: center;
+      color: #aaa;
+      font-size: 13px;
+      padding: 8px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="emoji">🎳</div>
+    <h1>保齡球社團活動投票</h1>
+    <p>請選擇您方便參加的日期（可複選）</p>
+  </div>
+
+  <form id="voteForm">
+    <div class="form-group">
+      <div class="section-title">您的姓名</div>
+      <input type="text" id="name" placeholder="請輸入姓名" required>
+    </div>
+
+    <div class="form-group">
+      <div class="section-title">電子信箱（用於確認資格）</div>
+      <input type="email" id="email" placeholder="請輸入信箱" required>
+    </div>
+
+    <div class="form-group">
+      <div class="section-title">活動日期（可複選）</div>
+      <div class="dates-grid">
+        <div class="date-option">
+          <input type="checkbox" id="d1" name="dates" value="d1">
+          <label for="d1">
+            <span class="check-mark">✓</span>
+            <span class="date-main">10/17（六）</span>
+            <span class="date-time">下午 3:00–5:00</span>
+          </label>
+        </div>
+        <div class="date-option">
+          <input type="checkbox" id="d2" name="dates" value="d2">
+          <label for="d2">
+            <span class="check-mark">✓</span>
+            <span class="date-main">10/18（日）</span>
+            <span class="date-time">下午 3:00–5:00</span>
+          </label>
+        </div>
+        <div class="date-option">
+          <input type="checkbox" id="d3" name="dates" value="d3">
+          <label for="d3">
+            <span class="check-mark">✓</span>
+            <span class="date-main">10/25（日）</span>
+            <span class="date-time">下午 3:00–5:00</span>
+          </label>
+        </div>
+        <div class="date-option">
+          <input type="checkbox" id="d4" name="dates" value="d4">
+          <label for="d4">
+            <span class="check-mark">✓</span>
+            <span class="date-main">10/31（日）</span>
+            <span class="date-time">下午 3:00–5:00</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">送出投票</button>
+    <div class="message" id="message"></div>
+  </form>
+
+  <hr class="divider">
+
+  <div class="results-title">📊 目前投票結果</div>
+
+  <div id="results">
+    <div class="loading">載入中…</div>
+  </div>
+
+  <div class="total-votes" id="totalVotes"></div>
+</div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbwbe3FGZXaFMuzU5G8d63zZgHMhUXFxGaPFKUwmloQr8X2WAeYKUC3j2JV7xHkw2dS6/exec";
+
+  const DATE_LABELS = [
+    "10/17（六）3–5pm",
+    "10/18（日）3–5pm",
+    "10/25（日）3–5pm",
+    "10/31（日）3–5pm"
+  ];
+
+  function renderResults(counts, total) {
+    const max = Math.max(...counts, 1);
+    const html = counts.map((c, i) => `
+      <div class="result-item">
+        <div class="result-label">
+          <span>${DATE_LABELS[i]}</span>
+          <span class="count">${c} 票</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${(c / max * 100).toFixed(1)}%"></div>
+        </div>
+      </div>
+    `).join('');
+    document.getElementById('results').innerHTML = html;
+    document.getElementById('totalVotes').textContent = `共 ${total} 人投票`;
+  }
+
+  function fetchResults() {
+    fetch(API_URL)
+      .then(r => r.json())
+      .then(data => renderResults(data.counts, data.total))
+      .catch(() => {
+        document.getElementById('results').innerHTML = '<div class="loading">無法載入結果</div>';
+      });
+  }
+
+  document.getElementById('voteForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const checked = document.querySelectorAll('input[name="dates"]:checked');
+
+    if (!name) return showMessage('請輸入姓名', 'error');
+    if (!email) return showMessage('請輸入信箱', 'error');
+    if (checked.length === 0) return showMessage('請至少選擇一個日期', 'error');
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '送出中…';
+
+    const payload = {
+      name,
+      email,
+      d1: document.getElementById('d1').checked,
+      d2: document.getElementById('d2').checked,
+      d3: document.getElementById('d3').checked,
+      d4: document.getElementById('d4').checked
+    };
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        showMessage('✅ ' + data.message, 'success');
+        document.getElementById('voteForm').style.display = 'none';
+        fetchResults();
+      } else {
+        showMessage('⚠️ ' + data.message, 'error');
+        btn.disabled = false;
+        btn.textContent = '送出投票';
+      }
+    })
+    .catch(() => {
+      showMessage('網路錯誤，請稍後再試', 'error');
+      btn.disabled = false;
+      btn.textContent = '送出投票';
+    });
+  });
+
+  function showMessage(text, type) {
+    const el = document.getElementById('message');
+    el.textContent = text;
+    el.className = 'message ' + type;
+    el.style.display = 'block';
+  }
+
+  fetchResults();
+  setInterval(fetchResults, 30000);
+</script>
+
+</body>
+</html>
